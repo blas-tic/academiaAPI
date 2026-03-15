@@ -1,0 +1,43 @@
+package com.example.academia.controller;
+
+import java.time.LocalDate;
+import java.util.List;
+
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.example.academia.dto.ClaseResponseDTO;
+import com.example.academia.security.UserDetailsImpl;
+import com.example.academia.service.CalendarioService;
+
+@RestController
+@RequestMapping("/api/alumnos/calendario")
+@PreAuthorize("hasRole('alumno')")
+public class CalendarioAlumnoController {
+
+   private CalendarioService calendarioService;
+
+   public CalendarioAlumnoController(CalendarioService calendarioService) {
+      this.calendarioService = calendarioService;
+   }
+
+   @GetMapping
+   public ResponseEntity<List<ClaseResponseDTO>> verCalendarioAlumno(
+         @AuthenticationPrincipal UserDetailsImpl user,
+         @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaInicio,
+         @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaFin) {
+      // por defecto, si no se especifican fechas, se toma la semana actual
+      if (fechaInicio == null) fechaInicio = LocalDate.now();
+      if (fechaFin == null) fechaFin = fechaInicio.plusWeeks(1);
+
+      List<ClaseResponseDTO> clases = calendarioService.calendarioAlumno(user.getId(), fechaInicio, fechaFin);
+      return ResponseEntity.ok(clases);
+   }
+
+}
