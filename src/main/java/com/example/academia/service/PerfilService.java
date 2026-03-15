@@ -22,6 +22,8 @@ import com.example.academia.repository.PersonaRepository;
 import com.example.academia.repository.ProfesorRepository;
 import com.example.academia.repository.UsuarioRepository;
 
+import jakarta.validation.constraints.Email;
+
 @Service
 public class PerfilService {
 
@@ -30,14 +32,16 @@ public class PerfilService {
    private final ProfesorRepository profesorRepository;
    private final UsuarioRepository usuarioRepository;
    private final PasswordEncoder passwordEncoder;
+   private final EmailService emailService;
 
    public PerfilService(PersonaRepository personaRepository, AlumnoRepository alumnoRepository,
-         ProfesorRepository profesorRepository, UsuarioRepository usuarioRepository, PasswordEncoder passwordEncoder) {
+         ProfesorRepository profesorRepository, UsuarioRepository usuarioRepository, PasswordEncoder passwordEncoder, EmailService emailService) {
       this.personaRepository = personaRepository;
       this.alumnoRepository = alumnoRepository;
       this.profesorRepository = profesorRepository;
       this.usuarioRepository = usuarioRepository;
       this.passwordEncoder = passwordEncoder;
+      this.emailService = emailService;
    }
 
    public PerfilResponseDTO obtenerPerfil(Long personaId, Long usuarioAutenticadoId, boolean esAdmin) {
@@ -173,9 +177,14 @@ public class PerfilService {
       }
 
       usuario.setPasswordHash(passwordEncoder.encode(newPassword));
+      if (!usuario.isActivo()) {
+         usuario.setActivo(true);
+      }
       usuarioRepository.save(usuario);
 
-      // TODO: FALTA enviar email de confirmación
+      // enviar email de confirmación
+      emailService.enviarConfirmacion(usuario.getPersona().getEmail());
+
    }
 
    @Transactional
@@ -185,8 +194,6 @@ public class PerfilService {
 
       usuario.setPasswordHash(passwordEncoder.encode(newPassword));
       usuarioRepository.save(usuario);
-
-      // TODO: FALTA enviar email de confirmación
 
    }
 

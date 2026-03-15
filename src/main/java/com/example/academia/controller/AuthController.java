@@ -1,9 +1,15 @@
 package com.example.academia.controller;
 
 import com.example.academia.dto.LoginRequest;
+import com.example.academia.dto.UsuarioResponseDTO;
+import com.example.academia.dto.ActivacionDTO;
 import com.example.academia.dto.JwtResponse;
 import com.example.academia.security.JwtTokenProvider;
 import com.example.academia.security.UserDetailsImpl;
+import com.example.academia.service.RegistroService;
+
+import jakarta.validation.Valid;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -17,10 +23,12 @@ public class AuthController {
 
     private final AuthenticationManager authenticationManager;
     private final JwtTokenProvider jwtTokenProvider;
+    private final RegistroService registroService;
 
-    public AuthController(AuthenticationManager authenticationManager, JwtTokenProvider jwtTokenProvider) {
+    public AuthController(AuthenticationManager authenticationManager, JwtTokenProvider jwtTokenProvider, RegistroService registroService) {
         this.authenticationManager = authenticationManager;
         this.jwtTokenProvider = jwtTokenProvider;
+        this.registroService = registroService;
     }
 
     @PostMapping("/login")
@@ -38,5 +46,11 @@ public class AuthController {
                 .toArray(String[]::new);
 
         return ResponseEntity.ok(new JwtResponse(jwt, userDetails.getId(), userDetails.getEmail(), roles));
+    }
+
+    @PostMapping("/activar")
+    public ResponseEntity<Void> activarCuenta(@Valid @RequestBody ActivacionDTO dto) {
+        registroService.activarCuenta(dto.getEmail(), dto.getCurrentPasword(), dto.getNewPasword());
+        return ResponseEntity.ok().build();
     }
 }

@@ -2,6 +2,9 @@ package com.example.academia.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.DisabledException;
+import org.springframework.security.authentication.LockedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -84,5 +87,38 @@ public class GlobalExceptionHandler {
 
       body.put("path", request.getDescription(false).replace("uri=", ""));
       return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
+   }
+
+   @ExceptionHandler(BadCredentialsException.class)
+   public ResponseEntity<?> handleBadCredentials(BadCredentialsException ex, WebRequest request) {
+      Map<String, Object> body = new HashMap<>();
+      body.put("timestamp", LocalDateTime.now());
+      body.put("status", HttpStatus.UNAUTHORIZED.value());
+      body.put("error", HttpStatus.UNAUTHORIZED.getReasonPhrase());
+      body.put("message", "Credenciales incorrectas");
+      body.put("path", request.getDescription(false).replace("uri=", ""));
+      return new ResponseEntity<>(body, HttpStatus.UNAUTHORIZED);
+   }
+
+   @ExceptionHandler(DisabledException.class)
+   public ResponseEntity<?> handleDisabled(DisabledException ex, WebRequest request) {
+      Map<String, Object> body = new HashMap<>();
+      body.put("timestamp", LocalDateTime.now());
+      body.put("status", HttpStatus.UNAUTHORIZED.value());
+      body.put("error", HttpStatus.UNAUTHORIZED.getReasonPhrase());
+      body.put("message", "Usuario inactivo. Por favor, cambie su contraseña o contacte con el administrador.");
+      body.put("path", request.getDescription(false).replace("uri=", ""));
+      return new ResponseEntity<>(body, HttpStatus.UNAUTHORIZED);
+   }
+
+   @ExceptionHandler(LockedException.class)
+   public ResponseEntity<?> handleLocked(LockedException ex, WebRequest request) {
+      Map<String, Object> body = new HashMap<>();
+      body.put("timestamp", LocalDateTime.now());
+      body.put("status", HttpStatus.UNAUTHORIZED.value());
+      body.put("error", HttpStatus.UNAUTHORIZED.getReasonPhrase());
+      body.put("message", "Usuario inactivo. Por favor, active su cuenta o contacte con el administrador.");
+      body.put("path", request.getDescription(false).replace("uri=", ""));
+      return new ResponseEntity<>(body, HttpStatus.UNAUTHORIZED);
    }
 }
