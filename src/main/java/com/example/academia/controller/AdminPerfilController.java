@@ -17,8 +17,10 @@ import com.example.academia.dto.PerfilUpdateDTO;
 import com.example.academia.security.UserDetailsImpl;
 import com.example.academia.service.PerfilService;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
+@Tag(name = "04. Perfiles", description = "Gestión de perfiles de usuarios y cambio de password (admin)")
 @RestController
 @RequestMapping("/api/admin/perfil")
 @PreAuthorize("hasRole('admin')")

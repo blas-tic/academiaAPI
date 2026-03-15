@@ -1,6 +1,6 @@
 # Academia Management API
 
-API REST para la gestión de una pequeña academia. Permite administrar alumnos, profesores, asignaturas, aulas, clases y matriculaciones, con control de acceso basado en roles (administrador, profesor, alumno). Incluye un sistema de registro público con activación por email (simulado con MailHog).
+API REST para la gestión de una pequeña academia. Permite administrar alumnos, profesores, asignaturas, aulas, clases y matriculaciones, con control de acceso basado en roles (administrador, profesor, alumno). Incluye un sistema de registro público con activación por email (simulado con MailHog) y documentación interactiva con Swagger UI.
 
 ## Características
 
@@ -15,6 +15,7 @@ API REST para la gestión de una pequeña academia. Permite administrar alumnos,
 - Visualización de calendarios personalizados (alumno, profesor) y global con filtros (admin).
 - Manejo global de excepciones con respuestas descriptivas.
 - Simulación de envío de emails mediante **MailHog** (entorno de desarrollo).
+- **Documentación interactiva** con Swagger UI (OpenAPI 3.0).
 - Base de datos PostgreSQL con modelo relacional (claves compuestas, composición en lugar de herencia).
 
 ## Tecnologías
@@ -28,6 +29,7 @@ API REST para la gestión de una pequeña academia. Permite administrar alumnos,
 - Maven
 - Lombok (opcional)
 - MailHog (servidor de email falso para desarrollo)
+- **springdoc-openapi** (Swagger UI)
 
 ## Requisitos previos
 
@@ -35,7 +37,7 @@ API REST para la gestión de una pequeña academia. Permite administrar alumnos,
 - Maven 3.9+
 - PostgreSQL 15+ (o Docker)
 - Docker (opcional, para levantar MailHog fácilmente)
-- Postman (para probar la API)
+- Postman o navegador para probar la API
 
 ## Instalación y configuración
 
@@ -110,19 +112,34 @@ La aplicación arrancará en `http://localhost:8080`.
 
 ## Datos iniciales
 
-Al arrancar la aplicación por primera vez, se crean automáticamente los roles `admin`, `profesor` y `alumno` si no existen. También se crea un usuario administrador por defecto (si no existe) mediante un `CommandLineRunner`:
+Al arrancar la aplicación, se crean automáticamente los roles `admin`, `profesor` y `alumno` si no existen. También se crea un usuario administrador por defecto:
 
-- Email: `admin@academia.com`
-- Contraseña: `admin123`
+- **Email:** `admin@academia.com`
+- **Contraseña:** `admin123`
 
 > **Recomendación:** Cambia esta contraseña tras el primer acceso.
+
+## Documentación de la API (Swagger UI)
+
+La API cuenta con documentación interactiva generada automáticamente. Puedes acceder a Swagger UI en:
+
+**[http://localhost:8080/swagger-ui.html](http://localhost:8080/swagger-ui.html)**
+
+Desde allí podrás:
+
+- Explorar todos los endpoints disponibles, agrupados por controladores (tags).
+- Probar las operaciones directamente desde el navegador.
+- Autenticarte mediante el botón **Authorize** (introduce tu token JWT).
+
+El documento OpenAPI en formato JSON está disponible en:  
+`http://localhost:8080/v3/api-docs`
 
 ## Estructura del proyecto
 
 ```
 src/main/java/com/example/academia/
 ├── AcademiaApplication.java
-├── config/                 # Configuraciones de seguridad, JWT
+├── config/                 # Configuraciones de seguridad, JWT, OpenAPI
 ├── controller/             # Controladores REST
 │   ├── AuthController.java (login, activación)
 │   ├── RegistroController.java (registro público)
@@ -246,7 +263,7 @@ La API requiere autenticación mediante token JWT (excepto `/api/auth/login`, `/
 
 ## Ejemplos de peticiones (Postman)
 
-Existe una colección de Postman exportada, que se incluye en el repositorio: `Academia.postman_collection.json`
+Se incluye una colección de Postman en `Academia.postman_collection.json`, que se puede importar.
 
 ### Registro de un alumno
 
@@ -354,12 +371,11 @@ Respuesta:
 - Las contraseñas se almacenan cifradas con BCrypt.
 - Los tokens JWT incluyen el email y el ID del usuario.
 - El acceso a los endpoints se controla mediante `@PreAuthorize` y reglas en `SecurityConfig`.
-- Los endpoints públicos son `/api/auth/**` (login, registro, activación) y `/error/**`.
+- Los endpoints públicos son `/api/auth/**` (login, registro, activación) y los de documentación `/swagger-ui.html`, `/swagger-ui/**`, `/v3/api-docs/**`.
 
 ## Posibles mejoras futuras
 
 - Paginación en listados.
-- Documentación con Swagger/OpenAPI.
 - Gestión de asistencia a clases.
 - Notificaciones por email reales (usando SMTP de verdad).
 - Recuperación de contraseña olvidada.
@@ -368,6 +384,8 @@ Respuesta:
 ## Contribución
 
 Si deseas contribuir, por favor abre un issue o envía un pull request. Se agradecen las sugerencias y mejoras.
+
+Si te ha gustado o te ha sido útil, pon alguna estrella, anda :)
 
 ## Licencia
 

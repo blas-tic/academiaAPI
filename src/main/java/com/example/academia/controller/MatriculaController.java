@@ -17,8 +17,11 @@ import com.example.academia.dto.MatriculaRequestDTO;
 import com.example.academia.dto.MatriculaResponseDTO;
 import com.example.academia.service.MatriculaService;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
+
+@Tag(name = "10. Matriculas", description = "Gestión de Matrículas de Alumnos (admin)")
 @RestController
 @RequestMapping("/api/admin/matriculas")
 @PreAuthorize("hasRole('admin')")

@@ -14,6 +14,9 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.academia.dto.ClaseResponseDTO;
 import com.example.academia.service.CalendarioService;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
+
+@Tag(name = "08. Calendarios 1", description = "Gestión de Calendarios por el Administrador (admin)")
 @RestController
 @RequestMapping("/api/admin/calendario")
 @PreAuthorize("hasRole('admin')")

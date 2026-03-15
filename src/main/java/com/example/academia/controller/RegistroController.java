@@ -11,8 +11,10 @@ import com.example.academia.dto.RegistroRequestDTO;
 import com.example.academia.dto.UsuarioResponseDTO;
 import com.example.academia.service.RegistroService;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
+@Tag(name = "02. Autenticación", description = "Registro")
 @RestController
 @RequestMapping("/api/auth")
 public class RegistroController {

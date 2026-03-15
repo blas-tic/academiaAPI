@@ -20,9 +20,11 @@ import com.example.academia.dto.UsuarioRegistroDTO;
 import com.example.academia.dto.UsuarioResponseDTO;
 import com.example.academia.service.UsuarioService;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 
+@Tag(name = "03. Usuarios", description = "Operaciones relacionadas con Usuarios (admin)")
 @RestController
 @RequestMapping("/api/admin/usuarios")
 @PreAuthorize("hasRole('admin')")

@@ -16,6 +16,10 @@ import com.example.academia.dto.ClaseResponseDTO;
 import com.example.academia.security.UserDetailsImpl;
 import com.example.academia.service.CalendarioService;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
+
+
+@Tag(name = "08. Calendarios 2", description = "Gestión de Calendarios por el Alumno")
 @RestController
 @RequestMapping("/api/alumnos/calendario")
 @PreAuthorize("hasRole('alumno')")

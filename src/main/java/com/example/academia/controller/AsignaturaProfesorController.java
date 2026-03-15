@@ -17,8 +17,10 @@ import com.example.academia.dto.AsignaturaProfesorRequestDTO;
 import com.example.academia.dto.AsignaturaProfesorResponseDTO;
 import com.example.academia.service.AsignaturaProfesorService;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
+@Tag(name = "06. Asignaturas-Profesores", description = "Asignar Asignaturas a profesores (admin)")
 @RestController
 @RequestMapping("/api/admin/asignatura-profesor")
 @PreAuthorize("hasRole('admin')")

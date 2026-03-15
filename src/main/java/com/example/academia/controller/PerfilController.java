@@ -15,8 +15,10 @@ import com.example.academia.dto.PerfilUpdateDTO;
 import com.example.academia.security.UserDetailsImpl;
 import com.example.academia.service.PerfilService;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
+@Tag(name = "11. Perfiles", description = "Gestión de Perfiles de usuarios")
 @RestController
 @RequestMapping("/api/perfil")
 public class PerfilController {
