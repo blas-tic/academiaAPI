@@ -5,11 +5,13 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.academia.dto.AdminPasswordChangeDTO;
 import com.example.academia.dto.PerfilResponseDTO;
 import com.example.academia.dto.PerfilUpdateDTO;
 import com.example.academia.security.UserDetailsImpl;
@@ -44,4 +46,12 @@ public class AdminPerfilController {
       PerfilResponseDTO response = perfilService.actualizarPerfil(id, user.getId(), true, dto);
       return ResponseEntity.ok(response);
    }
+
+   @PostMapping("/{id}/cambiar-password")
+   public ResponseEntity<Void> cambiarPasswordUsuario(
+      @PathVariable Long id,
+      @Valid @RequestBody AdminPasswordChangeDTO dto) {
+         perfilService.cambiarPasswordComoAdmin(id, dto.getNewPassword());
+         return ResponseEntity.ok().build();
+      }
 }

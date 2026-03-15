@@ -6,7 +6,7 @@ insert into my_schema.usuarios (activo, password_hash, persona_id)
 values (true, '$2a$12$nUlLuhPlgpsHDF.PH7FvieUuDPibgDdz9IyDLYpHO7dcvtpJjWv8O', 1);
 
 insert into my_schema.usuario_rol (usuario_id, rol_id)
-values (1, 3);
+values (1, 3);s
 
 select * from my_schema.personas p ;
 
@@ -119,4 +119,6 @@ join my_schema.asignatura_profesor ap on a.id = ap.asignatura_id
 join my_schema.profesores p on ap.profesor_id = p.id 
 join my_schema.personas p2 on p.id = p2.id 
 
-
+select * from clases c 
+where 
+	(c.asignatura_id = 2)

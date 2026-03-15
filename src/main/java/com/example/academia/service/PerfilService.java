@@ -3,6 +3,7 @@ package com.example.academia.service;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,13 +29,15 @@ public class PerfilService {
    private final AlumnoRepository alumnoRepository;
    private final ProfesorRepository profesorRepository;
    private final UsuarioRepository usuarioRepository;
+   private final PasswordEncoder passwordEncoder;
 
    public PerfilService(PersonaRepository personaRepository, AlumnoRepository alumnoRepository,
-         ProfesorRepository profesorRepository, UsuarioRepository usuarioRepository) {
+         ProfesorRepository profesorRepository, UsuarioRepository usuarioRepository, PasswordEncoder passwordEncoder) {
       this.personaRepository = personaRepository;
       this.alumnoRepository = alumnoRepository;
       this.profesorRepository = profesorRepository;
       this.usuarioRepository = usuarioRepository;
+      this.passwordEncoder = passwordEncoder;
    }
 
    public PerfilResponseDTO obtenerPerfil(Long personaId, Long usuarioAutenticadoId, boolean esAdmin) {
@@ -54,10 +57,11 @@ public class PerfilService {
    }
 
    @Transactional
-   public PerfilResponseDTO actualizarPerfil(Long personaId, long usuarioAutenticadoId, boolean esAdmin, PerfilUpdateDTO dto) {
+   public PerfilResponseDTO actualizarPerfil(Long personaId, long usuarioAutenticadoId, boolean esAdmin,
+         PerfilUpdateDTO dto) {
       if (!esAdmin && !personaId.equals(usuarioAutenticadoId)) {
          throw new AccessDeniedException("No tienes permiso para ver este perfil");
-      }  
+      }
       Persona persona = personaRepository.findById(personaId)
             .orElseThrow(() -> new ResourceNotFoundException("No se encuentra Persona con ID: " + personaId));
 
@@ -84,13 +88,13 @@ public class PerfilService {
 
       // sacar los roles
       Set<RolNombre> roles = usuario.getRoles().stream()
-         .map(Rol::getNombre)
-         .collect(Collectors.toSet());
+            .map(Rol::getNombre)
+            .collect(Collectors.toSet());
 
       // si es alumno y vienen datos, actualizar campos
       if (roles.contains(RolNombre.alumno)) {
          Alumno alumno = alumnoRepository.findById(personaId)
-            .orElseThrow(() -> new ResourceNotFoundException("No se encuentra Alumno con ID: " + personaId));
+               .orElseThrow(() -> new ResourceNotFoundException("No se encuentra Alumno con ID: " + personaId));
          if (dto.getTutor() != null) {
             alumno.setTutor(dto.getTutor());
          }
@@ -100,15 +104,15 @@ public class PerfilService {
       // si es profesor y tiene datos, actualizar campos
       if (roles.contains(RolNombre.profesor)) {
          Profesor profesor = profesorRepository.findById(personaId)
-            .orElseThrow(() -> new ResourceNotFoundException("No se encuentra Profesor con ID: " + personaId));
+               .orElseThrow(() -> new ResourceNotFoundException("No se encuentra Profesor con ID: " + personaId));
          if (dto.getNumEmpleado() != null) {
             // controlar que el numero de empleado no exista
             profesorRepository.findByNumEmpleado(dto.getNumEmpleado())
-            .ifPresent(p -> {
-               if (!p.getId().equals(personaId)) {
-                  throw new IllegalArgumentException("Ese número de empleado ya está en uso");
-               }
-            });
+                  .ifPresent(p -> {
+                     if (!p.getId().equals(personaId)) {
+                        throw new IllegalArgumentException("Ese número de empleado ya está en uso");
+                     }
+                  });
             profesor.setNumEmpleado(dto.getNumEmpleado());
          }
          if (dto.getDepartamento() != null) {
@@ -120,7 +124,8 @@ public class PerfilService {
          profesorRepository.save(profesor);
       }
 
-      // si es admin y no tiene otros roles, sólo se actualizan los campos comunes de arriba
+      // si es admin y no tiene otros roles, sólo se actualizan los campos comunes de
+      // arriba
 
       return mapToResponse(persona, usuario);
    }
@@ -156,6 +161,33 @@ public class PerfilService {
       }
       // Si es admin, no hay campos adicionales
       return dto;
+   }
+
+   @Transactional
+   public void cambiarMiPassword(Long usuarioId, String oldPassword, String newPassword) {
+      Usuario usuario = usuarioRepository.findById(usuarioId)
+            .orElseThrow(() -> new ResourceNotFoundException("No se encuentra Usuario con ID: " + usuarioId));
+
+      if (!passwordEncoder.matches(oldPassword, usuario.getPasswordHash())) {
+         throw new IllegalArgumentException("La contraseña actual no es correcta");
+      }
+
+      usuario.setPasswordHash(passwordEncoder.encode(newPassword));
+      usuarioRepository.save(usuario);
+
+      // TODO: FALTA enviar email de confirmación
+   }
+
+   @Transactional
+   public void cambiarPasswordComoAdmin(Long usuarioId, String newPassword) {
+      Usuario usuario = usuarioRepository.findById(usuarioId)
+            .orElseThrow(() -> new ResourceNotFoundException("No se encuentra Usuario con ID: " + usuarioId));
+
+      usuario.setPasswordHash(passwordEncoder.encode(newPassword));
+      usuarioRepository.save(usuario);
+
+      // TODO: FALTA enviar email de confirmación
+
    }
 
 }
