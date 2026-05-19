@@ -81,8 +81,14 @@ values
 (5, '2025-09-08', '2026-06-30', '13:30', '14:30', 4, 2, 5) -- Violin II quinta hora
 
 
+# USUARIOS / PERSONAS
 
-
+select u.id, u.activo , p.nombre , p.email, r.nombre as rol
+from my_schema.usuarios u 
+join my_schema.personas p on u.id = p.id 
+join my_schema.usuario_rol ur on u.id = ur.usuario_id 
+join my_schema.roles r on ur.rol_id = r.id 
+order by r.nombre 
 
 
 select * from my_schema.profesores p 
